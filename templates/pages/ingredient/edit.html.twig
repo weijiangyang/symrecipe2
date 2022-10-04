@@ -1,0 +1,40 @@
+{% extends "base.html.twig" %}
+{% block title %}
+    Symrecipe-nouveau ingredient
+{% endblock %}
+{% block body %}
+    <div class="container">
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">{{ message }}</div>
+        {% endfor %}
+        <h1>Edition d'un ingrédient</h1>
+        {{ form_start(form) }}
+   
+            <div class="form-group">
+                {{ form_label(form.name) }}
+                {{ form_widget(form.name)}}
+                <div class="form-error text-danger">
+                    {{ form_errors(form.name)}}
+                </div>
+                
+            </div>
+            
+            <div class="form-group">
+                {{ form_label(form.price) }}
+                {{ form_widget(form.price)}}
+                <div class="form-error text-danger">
+                    {{ form_errors(form.price)}}
+                </div>
+            
+            </div>  
+            
+            <div class="form-group">
+                <div class="form-group">
+                    <button class="btn btn-primary mt-5" type="submit">
+                        Modifier l'ingrédient
+                    </button>
+                </div>
+            </div>
+        {{ form_end(form) }}
+    </div> 
+{% endblock %}
