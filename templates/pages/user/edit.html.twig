@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Symrecipe - Modification du profile{% endblock %}
+
+{% block body %}
+<div class="container">
+    <h1 class="mt-4">Modification du profile</h1>
+    {% for message in app.flashes('warning') %}
+    <div class="alert alert-warning">
+         {{ message }}
+    </div>
+       
+    {% endfor %}
+    {{ form(form)}}
+</div>
+    
+{% endblock %}
