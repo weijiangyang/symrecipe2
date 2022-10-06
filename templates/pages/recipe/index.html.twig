@@ -11,7 +11,7 @@
             {% endfor %}
         <a href="{{ path('recipe.new') }}" class="btn btn-primary">Créer une nouvelle recette</a>
           
-        {% if not recipes is same as ([])  %} 
+        {% if not recipes.items is same as ([])  %} 
           <div class="count my-4">
             Il y a <span class="text-info h5">{{ recipes.getTotalItemCount }}</span> recettes au total</span>
           </div>

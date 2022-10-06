@@ -10,15 +10,18 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RecipeController extends AbstractController
 {
     #[Route('/recipe', name: 'recipe.index')]
+    #[IsGranted('ROLE_USER')]
     public function index(Request $request,PaginatorInterface $paginator,RecipeRepository $recipeRepository): Response
     {
         $recipes = $paginator->paginate(
-            $recipeRepository->findAll(), /* query NOT result */
+            $recipeRepository->findBy(['user'=>$this->getUser()]), /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
             10 /*limit per page*/
         );
@@ -43,6 +46,7 @@ class RecipeController extends AbstractController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $recipe = $form->getData();
+            $recipe->setUser($this->getUser());
             $em->persist($recipe);
             $em->flush();
             $this->addFlash(
@@ -65,7 +69,7 @@ class RecipeController extends AbstractController
      * @return Response
      */
     #[Route('/recette/edition/{id}', name: 'recipe.edit', methods: ['GET', 'POST'])]
-    
+    #[Security("is_granted('ROLE_USER') and user === recipe.getUser()")]
     public function edit(RecipeRepository $recipeRepository, Request $request, EntityManagerInterface $em, Recipe $recipe): Response
     {
 
@@ -97,7 +101,7 @@ class RecipeController extends AbstractController
      * @return Response
      */
     #[Route('/recette/suppression/{id}', name: 'recipe.delete', methods: ['GET', 'POST'])]
-    
+    #[Security("is_granted('ROLE_USER') and user === recipe.getUser()")]
     public function delete(RecipeRepository $recipeRepository, Request $request, EntityManagerInterface $em, Recipe $recipe): Response
     {
         if (!$recipe) {

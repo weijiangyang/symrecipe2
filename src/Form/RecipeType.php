@@ -4,9 +4,10 @@ namespace App\Form;
 
 use App\Entity\Recipe;
 use App\Entity\Ingredient;
+
 use App\Repository\IngredientRepository;
-use Doctrine\DBAL\Types\BooleanType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -20,6 +21,11 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class RecipeType extends AbstractType
 {
+    private $security;
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
@@ -133,6 +139,8 @@ class RecipeType extends AbstractType
                 'choice_label'=>'name',
                 'query_builder'=> function (IngredientRepository $ingredientRepository){
                     return $ingredientRepository->createQueryBuilder('i')
+                                                ->where('i.user = :user')
+                                                ->setParameter('user',$this->security->getToken()->getUser())
                                                 ->orderBy('i.name', 'ASC');
                 },
                 'multiple' => true,
