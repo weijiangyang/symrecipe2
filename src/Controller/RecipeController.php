@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\Mark;
 use App\Entity\Recipe;
+use App\Form\MarkType;
 use App\Form\RecipeType;
+use App\Repository\MarkRepository;
 use App\Repository\RecipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
@@ -28,6 +31,57 @@ class RecipeController extends AbstractController
         return $this->render('pages/recipe/index.html.twig', [
             'recipes' => $recipes
         ]);
+    }
+
+    #[Route('/recette/public',name:'recette.index.public')]
+    public function indexPublic(Request $request, PaginatorInterface $paginator, RecipeRepository $recipeRepository):Response
+    {
+        $recipes = $paginator->paginate(
+            $recipeRepository->findPublicRecipe(null),/* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            10 /*limit per page*/
+        );
+        return $this->render('pages/recipe/index_public.html.twig',[
+            'recipes'=>$recipes
+        ]);
+    }
+    #[Security("is_granted('ROLE_USER') and recipe.isIsPublic() === true")]
+    #[Route("/recette/{id}", name:'recipe.show')]
+    public function show(MarkRepository $markRepository,Recipe $recipe,Request $request,EntityManagerInterface $em):Response
+    {
+        $mark = new Mark;
+        $form = $this->createForm(MarkType::class,$mark);
+        $form->handleRequest($request);
+        if($form->isSubmitted() && $form->isValid()){
+            $mark = new Mark;
+            $mark->setMark($form->getData()->getMark())
+                ->setUser($this->getUser())
+                ->setRecipe($recipe);
+            $existingMark = $markRepository->findOneBy([
+                'user' => $this->getUser(),
+                'recipe'=> $recipe
+            ]);
+            if($existingMark){
+                $em->remove($existingMark);
+
+            };
+            $em->persist($mark);
+            $em->flush();
+
+            $this->addFlash(
+                'success',
+                'Voter note a été bien compté'
+            );
+
+            return $this->redirectToRoute('recipe.show',[
+                'id'=>$recipe->getId()
+            ]);
+        }
+        return $this->render('pages/recipe/show.html.twig',[
+            'recipe'=>$recipe,
+            'form'=>$form->createView()
+        ]);
+
     }
 
     /**

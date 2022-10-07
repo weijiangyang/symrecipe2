@@ -1,0 +1,25 @@
+{% extends "base.html.twig" %}
+{% block title %}
+    Symrecipe - {{ recipe.name }}
+{% endblock %}
+{% block body %}
+    <div class="container">
+        {% for message in app.flashes('success') %}
+            <p class="alert alert-success">{{ message }}</p>
+        {% endfor %}
+        <h1 class="mt-4">{{ recipe.name }}</h1>
+        <p class="text-info">Note:{{ recipe.average | number_format(2, '.', ',')}}</p>
+        <span class="badge bg-primary"> Créer le {{ recipe.createdAt | date('d/m/Y') }}</span>
+        <p class="mt-4">Temps(en minutes): {{ recipe.time? recipe.time : 'non renseigné'}} </p>
+        <p>Pour {{ recipe.nbPeople? recipe.nbPeople : 'non renseigné'}} personnes</p>
+        <p>Difficulté : {{ recipe.difficulty ? recipe.difficulty : 'non renseigné'}}</p>
+        
+        <p>Prix(en euro): {{ recipe.price ? recipe.price : 'non renseigné'}} </p>
+        <div>Description: {{ recipe.description }}</div>
+        <p class="mt-4">Ingrédients : </p>
+        {% for ingredient in recipe.ingredients%}
+            <span class="badge bg-primary mt-1">{{ ingredient.name }}</span>
+        {% endfor %}
+        {{ form(form) }}
+    </div>
+{% endblock %}
