@@ -13,12 +13,18 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('ingredient.index')}}">Ingredients
+                    <a class="nav-link" href="{{ path('ingredient.index')}}">Mes ingredients
                        
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ path('recipe.index')}}">Recettes
+                    <a class="nav-link" href="{{ path('recipe.index')}}">Mes recettes
+                       
+                    </a>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('recette.index.public')}}">Recettes communauté
                        
                     </a>
                 </li>
@@ -30,10 +36,14 @@
                 <div class="nav-item dropdown px-5">
                         <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">{{ app.user }}</a>
                         <div class="dropdown-menu">
+                            
                             <a class="dropdown-item" href="{{ path('user.edit',{'id':app.user.id}) }}">Modifier le profile</a>
                             <a class="dropdown-item" href="{{  path('user.edit.password',{'id':app.user.id}) }}">Modifier le mot de passe</a>
                           
                             <div class="dropdown-divider"></div>
+                            {% if 'ROLE_ADMIN' in app.user.roles%}
+                            <a class="dropdown-item" href="{{ path('admin') }}">Administration</a>
+                            {% endif %}
                             <a class="dropdown-item" href="{{ path('security.logout') }}">Deconnexion</a>
                         </div>
                 </div>

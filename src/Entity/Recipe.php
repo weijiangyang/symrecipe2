@@ -2,17 +2,21 @@
 
 namespace App\Entity;
 
-use App\Repository\RecipeRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use App\Repository\RecipeRepository;
+
+use Doctrine\Common\Collections\Collection;
+use Symfony\Component\HttpFoundation\File\File;
+use Doctrine\Common\Collections\ArrayCollection;
+use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: RecipeRepository::class)]
 #[UniqueEntity('name')]
 #[ORM\HasLifecycleCallbacks]
+#[Vich\Uploadable]
 class Recipe
 {
     #[ORM\Id]
@@ -49,8 +53,8 @@ class Recipe
     #[Assert\LessThan(1001)]
     private ?float $price = null;
 
-    #[ORM\Column]
-    private ?bool $isFavorite = null;
+    #[ORM\Column(nullable: true)]
+    private ?bool $isFavorite = false;
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
@@ -65,14 +69,19 @@ class Recipe
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
 
-    #[ORM\Column]
-    private ?bool $isPublic = null;
+    #[ORM\Column(nullable: true)]
+    private ?bool $isPublic = false;
 
     #[ORM\OneToMany(mappedBy: 'recipe', targetEntity: Mark::class, orphanRemoval: true)]
     private Collection $marks;
 
     private ?float $average = null;
+    
+    #[Vich\UploadableField(mapping: 'recipe_images', fileNameProperty: 'imageName')]
+    private ?File $imageFile = null;
 
+    #[ORM\Column(type: 'string',nullable:true)]
+    private ?string $imageName = null;
     
 
     public function __construct()
@@ -284,9 +293,41 @@ class Recipe
         foreach($this->marks as $mark){
             $total += $mark->getMark();
         }
-        $average = $total / count($this->marks);
+        if(count($this->marks) != 0){
+             $average = $total / count($this->marks);
+        }else{
+            $average = 0;
+        }
+       
         return $average;
     }
+
+    public function setImageFile(?File $imageFile = null): void
+    {
+        $this->imageFile = $imageFile;
+
+        if (null !== $imageFile) {
+            // It is required that at least one field changes if you are using doctrine
+            // otherwise the event listeners won't be called and the file is lost
+            $this->updatedAt = new \DateTimeImmutable();
+        }
+    }
+
+    public function getImageFile(): ?File
+    {
+        return $this->imageFile;
+    }
+
+    public function setImageName(?string $imageName): void
+    {
+        $this->imageName = $imageName;
+    }
+
+    public function getImageName(): ?string
+    {
+        return $this->imageName;
+    }
+
 
    
 }

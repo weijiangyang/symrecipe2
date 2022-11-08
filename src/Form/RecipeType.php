@@ -9,12 +9,14 @@ use App\Repository\IngredientRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Form\FormBuilderInterface;
+use Vich\UploaderBundle\Form\Type\VichImageType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\RangeType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -101,6 +103,10 @@ class RecipeType extends AbstractType
                     new Assert\NotBlank(),
                 ]
             ])
+            ->add('imageFile',VichImageType::class,[
+                'required'=>false,
+               
+            ])
             ->add('price', MoneyType::class, [
                 'attr' => [
                     'class' => 'form-control',
@@ -124,11 +130,16 @@ class RecipeType extends AbstractType
                 'label_attr' => [
                     'class' => 'form-check-label mt-4'
                 ],
-                'constraints' => [
-                    new Assert\NotBlank(),
-                ]
+               
+                'required'=>false
             ]
 
+            )
+            ->add('isPublic',CheckboxType::class, [
+               
+                'label' => 'Public?',
+                'required' => false
+                ]
             )
            
             ->add('ingredients', EntityType::class,[
@@ -154,6 +165,11 @@ class RecipeType extends AbstractType
                 ]
             ]
             )
+            ->add('submit',SubmitType::class,[
+                'attr'=>[
+                    'class'=>'btn btn-primary mt-4'
+                ]
+            ])
         ;
     }
 

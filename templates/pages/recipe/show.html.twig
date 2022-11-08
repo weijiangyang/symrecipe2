@@ -16,6 +16,10 @@
         
         <p>Prix(en euro): {{ recipe.price ? recipe.price : 'non renseigné'}} </p>
         <div>Description: {{ recipe.description }}</div>
+        <div >
+             <img style = "max-width:300px" src="{{ vich_uploader_asset(recipe, 'imageFile') }}">
+        </div>
+       
         <p class="mt-4">Ingrédients : </p>
         {% for ingredient in recipe.ingredients%}
             <span class="badge bg-primary mt-1">{{ ingredient.name }}</span>

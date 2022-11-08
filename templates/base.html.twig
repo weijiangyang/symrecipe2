@@ -13,6 +13,12 @@
                 a{
                     text-decoration: none;
                 }
+                .form-image{
+                  max-width:300px
+                }
+                img{
+                    max-width:100%
+                }
             </style>
         {% endblock %}
 
@@ -25,7 +31,10 @@
     <body>
         {% block header %}
             {% include "partials/_header.html.twig" %}
+           
         {% endblock %}
         {% block body %}{% endblock %}
+         {% include "partials/_footer.html.twig" %}
     </body>
+
 </html>
